@@ -722,7 +722,8 @@ with kol_e2:
                     gap:0.45rem 0.7rem; margin-bottom:0.55rem;'>
             <span class='badge' style='background:{w["bg"]}; color:{w["teks"]}; min-width:150px; text-align:center;'>{w["muka"]} {kat}</span>
             <span style='font-size:0.85rem; color:#33475C; min-width:110px;'>{RENTANG[kat]} µg/m³</span>
-            <span style='font-size:0.85rem; color:#64798D; flex:1 1 12rem;'>{DESKRIPSI[kat]}</span>
+            <span style='font-size:0.85rem; color:#64798D;
+                  flex:1 1 13rem; min-width:13rem;'>{DESKRIPSI[kat]}</span>
         </div>"""
     st.markdown(f"<div class='kartu' style='padding:1rem 1.2rem;'>{baris_kat}</div>",
                 unsafe_allow_html=True)
