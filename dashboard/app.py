@@ -243,8 +243,14 @@ def fmt_tanggal(d):
 # MESIN PRAKIRAAN (model memprediksi tiap titik pantau)
 # ============================================================
 @st.cache_data(show_spinner=False)
-def prakiraan_semua(tanggal_iso: str) -> pd.DataFrame:
-    """Prediksi PM2.5 semua titik pantau pada tanggal tertentu."""
+def _prediksi_mentah(tanggal_iso: str) -> pd.DataFrame:
+    """Prediksi PM2.5 semua titik pantau pada tanggal tertentu.
+
+    Hanya memuat hasil model (stasiun, kota, nilai PM2.5). Atribut
+    tampilan seperti nama dan koordinat sengaja TIDAK disimpan di sini,
+    karena cache Streamlit hanya ditandai ulang bila isi fungsi berubah,
+    bukan bila kamus WILAYAH berubah.
+    """
     t = pd.Timestamp(tanggal_iso)
     rows, meta = [], []
     for stasiun in sorted(df['stasiun'].unique()):
@@ -286,14 +292,25 @@ def prakiraan_semua(tanggal_iso: str) -> pd.DataFrame:
             'o3_lag_1':      sub['o3'].iloc[-1],
             'no2_lag_1':     sub['no2'].iloc[-1],
         })
-        meta.append({'stasiun': stasiun, 'kota': kota,
-                     'wilayah': WILAYAH[stasiun]['wilayah'],
-                     'lat': WILAYAH[stasiun]['lat'],
-                     'lon': WILAYAH[stasiun]['lon']})
+        meta.append({'stasiun': stasiun, 'kota': kota})
     inp = pd.DataFrame(rows)[FITUR]
     pred = model.predict(inp)
     hasil = pd.DataFrame(meta)
     hasil['pm25'] = pred
+    return hasil
+
+
+def prakiraan_semua(tanggal_iso: str) -> pd.DataFrame:
+    """Hasil prediksi dilengkapi atribut tampilan.
+
+    Nama titik pantau, koordinat, dan kategori dipasang di luar cache
+    supaya perubahan pada WILAYAH atau breakpoint langsung tercermin
+    tanpa perlu menghapus cache secara manual.
+    """
+    hasil = _prediksi_mentah(tanggal_iso).copy()
+    hasil['wilayah'] = hasil['stasiun'].map(lambda s: WILAYAH[s]['wilayah'])
+    hasil['lat'] = hasil['stasiun'].map(lambda s: WILAYAH[s]['lat'])
+    hasil['lon'] = hasil['stasiun'].map(lambda s: WILAYAH[s]['lon'])
     hasil['kategori'] = hasil['pm25'].apply(kategori_pm25)
     return hasil
 
