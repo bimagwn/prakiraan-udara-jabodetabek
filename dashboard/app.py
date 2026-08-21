@@ -505,10 +505,10 @@ fig_map.update_layout(
     legend=dict(orientation='h', yanchor='bottom', y=1.01, x=0,
                 bgcolor='rgba(0,0,0,0)', title=None,
                 font=dict(size=12, color='#33475C')))
-st.plotly_chart(fig_map, width='stretch', theme=None,
-                config={'displayModeBar': False})
+st.plotly_chart(fig_map, width='stretch', theme=None, config=KONFIG_GRAFIK)
 st.caption("Ukuran & warna lingkaran mengikuti prakiraan PM2.5 tiap titik pantau. "
-           "Arahkan kursor untuk detail. (Latar peta membutuhkan koneksi internet; "
+           "Arahkan kursor untuk detail; ketuk dua kali untuk mengembalikan "
+           "tampilan peta semula. (Latar peta membutuhkan koneksi internet; "
            "tanpa internet, titik pantau tetap tampil.)")
 
 st.markdown("")
