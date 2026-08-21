@@ -3,15 +3,15 @@
 Prakiraan Kualitas Udara JABODETABEK - Tampilan Publik v4
 Portal informasi publik - versi sendiri.
 Referensi desain: BMKG (peta + legenda + grafik peringkat),
-nafas (kartu wilayah), IQAir (panel per-polutan).
+nafas (kartu titik pantau), IQAir (panel per-polutan).
 
-Fitur: peta interaktif 15 wilayah, prakiraan per kota &
-wilayah, riwayat 7 hari / 30 hari / 3 bulan / 1 tahun,
+Fitur: peta interaktif 15 titik pantau, prakiraan per kota &
+titik pantau, riwayat 7 hari / 30 hari / 3 bulan / 1 tahun,
 panel 6 polutan (PM2.5, PM10, SO2, CO, O3, NO2),
 rekomendasi aktivitas, edukasi bahasa awam.
 
 Algoritma : Random Forest Regressor (di balik layar)
-Cakupan   : 6 kota / 15 wilayah pantau, 2020 - Jun 2026
+Cakupan   : 6 kota / 15 titik pantau, 2020 - Jun 2026
 
 Penulisan Ilmiah 2026 - Bima Gunawan (50423276)
 Universitas Gunadarma - Prodi Informatika
@@ -380,7 +380,7 @@ chip = "".join(
 st.markdown(f"""
 <div class='blok-judul'>
     <h1>🌤️ Prakiraan Kualitas Udara Jabodetabek</h1>
-    <p>Prakiraan PM2.5 harian, peta wilayah, dan rekomendasi aktivitas luar ruang —
+    <p>Prakiraan PM2.5 harian, peta titik pantau, dan rekomendasi aktivitas luar ruang —
     Jakarta, Bogor, Depok, Tangerang, Tangerang Selatan, dan Bekasi.</p>
     <div>{chip}</div>
 </div>
@@ -418,7 +418,7 @@ hasil = prakiraan_semua(tanggal.isoformat())
 stasiun_lewat = sorted(set(df['stasiun'].unique()) - set(hasil['stasiun']))
 if stasiun_lewat:
     st.warning("Titik pantau berikut tidak ditampilkan (riwayat belum "
-               f"lengkap / wilayah belum terdaftar): {', '.join(stasiun_lewat)}")
+               f"lengkap / titik pantau belum terdaftar): {', '.join(stasiun_lewat)}")
 ringkas_kota = hasil.groupby('kota')['pm25'].mean().to_dict()
 aktual_kemarin = (df[df['tanggal'] == TGL_DATA_AKHIR]
                   .groupby('kota')['pm25'].mean().to_dict())
@@ -431,7 +431,7 @@ st.markdown("### Prakiraan PM2.5 per Kota")
 st.caption("Enam kota administratif Jabodetabek. Kota Tangerang dan Kota "
            "Tangerang Selatan merupakan dua daerah otonom yang terpisah, "
            "sedangkan DKI Jakarta ditampilkan sebagai satu kesatuan dengan "
-           "rincian per wilayahnya pada bagian Detail Kota di bawah.")
+           "rincian per titik pantaunya pada bagian Detail Kota di bawah.")
 
 k_bersih = min(ringkas_kota, key=ringkas_kota.get)
 k_tinggi = max(ringkas_kota, key=ringkas_kota.get)
@@ -501,9 +501,9 @@ fig_map.update_layout(
                 font=dict(size=12, color='#33475C')))
 st.plotly_chart(fig_map, width='stretch', theme=None,
                 config={'displayModeBar': False})
-st.caption("Ukuran & warna lingkaran mengikuti prakiraan PM2.5 tiap wilayah. "
+st.caption("Ukuran & warna lingkaran mengikuti prakiraan PM2.5 tiap titik pantau. "
            "Arahkan kursor untuk detail. (Latar peta membutuhkan koneksi internet; "
-           "tanpa internet, titik wilayah tetap tampil.)")
+           "tanpa internet, titik pantau tetap tampil.)")
 
 st.markdown("")
 
@@ -528,11 +528,14 @@ fig_rank.update_layout(
     plot_bgcolor='#FFFFFF', paper_bgcolor='#FFFFFF',
     font_color='#33475C', height=380,
     margin=dict(l=10, r=10, t=20, b=10),
-    xaxis=dict(gridcolor='#EDF2F8', tickangle=-40),
+    # automargin: sisa ruang bawah menyesuaikan panjang label miring,
+    # supaya nama titik pantau tidak terpotong di layar sempit
+    xaxis=dict(gridcolor='#EDF2F8', tickangle=-40,
+               automargin=True, tickfont=dict(size=11)),
     yaxis=dict(gridcolor='#EDF2F8', title='PM2.5 (µg/m³)'),
     bargap=0.35)
 st.plotly_chart(fig_rank, width='stretch', config={'displayModeBar': False})
-st.caption("Warna batang mengikuti kategori ISPU. Wilayah paling kiri = prakiraan PM2.5 tertinggi.")
+st.caption("Warna batang mengikuti kategori ISPU. Titik pantau paling kiri = prakiraan PM2.5 tertinggi.")
 
 st.markdown("")
 
@@ -574,9 +577,10 @@ with kol_kiri:
     for _, r in sub_hasil.iterrows():
         ww = WARNA[r['kategori']]
         st.markdown(f"""
-        <div class='item-saran' style='display:flex; justify-content:space-between; align-items:center;'>
-            <span style='font-weight:600;'>{r['wilayah']}</span>
-            <span>
+        <div class='item-saran' style='display:flex; justify-content:space-between;
+                    align-items:center; gap:0.75rem;'>
+            <span style='font-weight:600; min-width:0;'>{r['wilayah']}</span>
+            <span style='white-space:nowrap; flex-shrink:0;'>
                 <strong style='margin-right:0.6rem;'>{r['pm25']:.0f} µg/m³</strong>
                 <span class='badge' style='background:{ww["bg"]}; color:{ww["teks"]};'>{r['kategori']}</span>
             </span>
@@ -705,7 +709,7 @@ with kol_e1:
         st.markdown(
             "Angka prakiraan dihitung oleh sistem komputer yang **mempelajari pola "
             "kualitas udara dari riwayat data harian 2020–2026** — misalnya kondisi "
-            "kemarin, pola musiman, dan karakter tiap wilayah. Prakiraan bersifat "
+            "kemarin, pola musiman, dan karakter tiap titik pantau. Prakiraan bersifat "
             "perkiraan satu hari ke depan, bukan pengukuran langsung.")
 
 with kol_e2:
@@ -714,10 +718,11 @@ with kol_e2:
     baris_kat = ""
     for kat, w in WARNA.items():
         baris_kat += f"""
-        <div style='display:flex; align-items:center; gap:0.7rem; margin-bottom:0.45rem;'>
+        <div style='display:flex; align-items:center; flex-wrap:wrap;
+                    gap:0.45rem 0.7rem; margin-bottom:0.55rem;'>
             <span class='badge' style='background:{w["bg"]}; color:{w["teks"]}; min-width:150px; text-align:center;'>{w["muka"]} {kat}</span>
             <span style='font-size:0.85rem; color:#33475C; min-width:110px;'>{RENTANG[kat]} µg/m³</span>
-            <span style='font-size:0.85rem; color:#64798D;'>{DESKRIPSI[kat]}</span>
+            <span style='font-size:0.85rem; color:#64798D; flex:1 1 12rem;'>{DESKRIPSI[kat]}</span>
         </div>"""
     st.markdown(f"<div class='kartu' style='padding:1rem 1.2rem;'>{baris_kat}</div>",
                 unsafe_allow_html=True)
