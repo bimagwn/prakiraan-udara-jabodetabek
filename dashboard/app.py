@@ -110,6 +110,12 @@ DESKRIPSI = {
 }
 
 
+# Konfigurasi grafik: tanpa bilah alat, tanpa perbesar-gulir, dan
+# klik-ganda mengembalikan tampilan semula (jaring pengaman di layar sentuh).
+KONFIG_GRAFIK = {'displayModeBar': False, 'scrollZoom': False,
+                 'doubleClick': 'reset'}
+
+
 def warna_teks(kat):
     """Warna teks angka di atas kartu putih (kuning perlu digelapkan)."""
     return WARNA[kat]['bg'] if kat != 'TIDAK SEHAT' else '#B58F00'
@@ -533,8 +539,11 @@ fig_rank.update_layout(
     xaxis=dict(gridcolor='#EDF2F8', tickangle=-40,
                automargin=True, tickfont=dict(size=11)),
     yaxis=dict(gridcolor='#EDF2F8', title='PM2.5 (µg/m³)'),
+    # dragmode=False: cegah kotak-perbesar tak sengaja saat layar disentuh
+    dragmode=False,
     bargap=0.35)
-st.plotly_chart(fig_rank, width='stretch', config={'displayModeBar': False})
+st.plotly_chart(fig_rank, width='stretch',
+                config=KONFIG_GRAFIK)
 st.caption("Warna batang mengikuti kategori ISPU. Titik pantau paling kiri = prakiraan PM2.5 tertinggi.")
 
 st.markdown("")
@@ -621,8 +630,9 @@ with kol_kanan:
         margin=dict(l=10, r=10, t=10, b=10),
         xaxis=dict(gridcolor='#EDF2F8', title=None),
         yaxis=dict(gridcolor='#EDF2F8', title='PM2.5 (µg/m³)'),
+        dragmode=False,
         showlegend=False)
-    st.plotly_chart(fig, width='stretch', config={'displayModeBar': False})
+    st.plotly_chart(fig, width='stretch', config=KONFIG_GRAFIK)
     st.caption("Garis = rata-rata harian kota. Di bawah garis hijau = BAIK; "
                "hijau–merah = SEDANG; di atas merah = TIDAK SEHAT.")
 
