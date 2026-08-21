@@ -63,7 +63,7 @@ NAMA_TAMPIL = {'Tangsel': 'Tangerang Selatan'}
 
 # Titik pantau -> WILAYAH + koordinat (lokasi publik faktual)
 # Penamaan SERAGAM "Kota - Lokasi Stasiun" agar konsisten di seluruh
-# tampilan dan sama dengan Tabel 3.1 naskah.
+# tampilan dan sama dengan Tabel 3.3 naskah.
 WILAYAH = {
     'DKI1': {'wilayah': 'Jakarta - Bundaran HI',    'lat': -6.1953, 'lon': 106.8231},
     'DKI2': {'wilayah': 'Jakarta - Kelapa Gading',  'lat': -6.1571, 'lon': 106.9055},
@@ -76,8 +76,8 @@ WILAYAH = {
     'DPK2': {'wilayah': 'Depok - Cinere',           'lat': -6.3311, 'lon': 106.7745},
     'TGR1': {'wilayah': 'Tangerang - Cikokol',      'lat': -6.1783, 'lon': 106.6319},
     'TGR2': {'wilayah': 'Tangerang - Karawaci',     'lat': -6.2249, 'lon': 106.6060},
-    'TGS1': {'wilayah': 'Tangsel - BSD City',       'lat': -6.3019, 'lon': 106.6527},
-    'TGS2': {'wilayah': 'Tangsel - Pamulang',       'lat': -6.3427, 'lon': 106.7383},
+    'TGS1': {'wilayah': 'Tangerang Selatan - BSD City',  'lat': -6.3019, 'lon': 106.6527},
+    'TGS2': {'wilayah': 'Tangerang Selatan - Pamulang',  'lat': -6.3427, 'lon': 106.7383},
     'BKS1': {'wilayah': 'Bekasi - Bekasi Kota',     'lat': -6.2383, 'lon': 106.9756},
     'BKS2': {'wilayah': 'Bekasi - Bekasi Selatan',  'lat': -6.2664, 'lon': 106.9896},
 }
@@ -110,10 +110,16 @@ DESKRIPSI = {
 }
 
 
-# Konfigurasi grafik: tanpa bilah alat, tanpa perbesar-gulir, dan
-# klik-ganda mengembalikan tampilan semula (jaring pengaman di layar sentuh).
+# Konfigurasi grafik batang & garis: mode seret dimatikan pada figure-nya,
+# tanpa bilah alat, dan klik-ganda mengembalikan tampilan semula.
 KONFIG_GRAFIK = {'displayModeBar': False, 'scrollZoom': False,
                  'doubleClick': 'reset'}
+
+# Peta perlu tetap dapat digeser DAN diperbesar. Karena bilah alat
+# disembunyikan, perbesaran mengandalkan gulir tetikus (atau cubit dua jari
+# di layar sentuh), sedangkan klik/ketuk ganda mengembalikan tampilan awal.
+KONFIG_PETA = {'displayModeBar': False, 'scrollZoom': True,
+               'doubleClick': 'reset'}
 
 
 def warna_teks(kat):
@@ -505,10 +511,10 @@ fig_map.update_layout(
     legend=dict(orientation='h', yanchor='bottom', y=1.01, x=0,
                 bgcolor='rgba(0,0,0,0)', title=None,
                 font=dict(size=12, color='#33475C')))
-st.plotly_chart(fig_map, width='stretch', theme=None, config=KONFIG_GRAFIK)
+st.plotly_chart(fig_map, width='stretch', theme=None, config=KONFIG_PETA)
 st.caption("Ukuran & warna lingkaran mengikuti prakiraan PM2.5 tiap titik pantau. "
-           "Arahkan kursor untuk detail; ketuk dua kali untuk mengembalikan "
-           "tampilan peta semula. (Latar peta membutuhkan koneksi internet; "
+           "Arahkan kursor untuk detail; gulir untuk memperbesar dan ketuk dua kali "
+           "untuk mengembalikan tampilan semula. (Latar peta membutuhkan koneksi internet; "
            "tanpa internet, titik pantau tetap tampil.)")
 
 st.markdown("")
