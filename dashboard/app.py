@@ -417,6 +417,51 @@ st.markdown(f"""
 
 
 # ============================================================
+# RINCIAN JABODETABEK
+# ============================================================
+# "Jabodetabek" adalah singkatan, jadi kota mana saja yang tercakup perlu
+# dinyatakan terbuka sebelum pembaca menafsirkan angkanya. Jumlah titik
+# pantau dihitung dari datanya sendiri agar tidak pernah berbeda dengan
+# yang benar-benar ditampilkan.
+titik_per_kota = df.groupby('kota')['stasiun'].nunique().to_dict()
+SUKU = {'Jakarta': ('Ja', 'karta'), 'Bogor': ('Bo', 'gor'),
+        'Depok': ('De', 'pok'), 'Tangerang': ('Ta', 'ngerang'),
+        'Tangsel': ('', 'Tangerang Selatan'), 'Bekasi': ('Bek', 'asi')}
+
+# HTML disusun tanpa baris baru dan tanpa indentasi: Markdown menganggap
+# baris yang menjorok empat spasi sebagai blok kode, sehingga tandanya akan
+# tercetak apa adanya alih-alih dirender.
+GARIS = ("display:flex; justify-content:space-between; align-items:baseline;"
+         "gap:0.6rem; padding:0.32rem 0; border-bottom:1px solid #EDF2F8;")
+baris_kota = ''.join(
+    f"<div style=\"{GARIS}\">"
+    f"<span style='font-size:0.93rem;'>"
+    f"<strong style='color:#0A4D8C;'>{SUKU[kota][0]}</strong>{SUKU[kota][1]}</span>"
+    f"<span style='font-size:0.82rem; color:#64798D; white-space:nowrap;'>"
+    f"{titik_per_kota.get(kota, 0)} titik pantau</span></div>"
+    for kota in KOTA_URUT)
+
+st.markdown(
+    "<div class='kartu' style='padding:1.1rem 1.3rem; margin-bottom:1rem;'>"
+    "<div style='font-weight:800; color:#12395C; margin-bottom:0.15rem;'>"
+    f"Wilayah yang dicakup — 6 kota, {sum(titik_per_kota.values())} titik pantau</div>"
+    "<div style='font-size:0.86rem; color:#64798D; margin-bottom:0.6rem;'>"
+    "<strong>Jabodetabek</strong> adalah singkatan dari <strong>Ja</strong>karta, "
+    "<strong>Bo</strong>gor, <strong>De</strong>pok, <strong>Ta</strong>ngerang, "
+    "dan <strong>Bek</strong>asi.</div>"
+    f"{baris_kota}"
+    "<div style='font-size:0.8rem; color:#64798D; margin-top:0.7rem; line-height:1.55;'>"
+    "Satuan wilayah yang dipakai adalah <strong>daerah otonom setingkat kota</strong>. "
+    "Kota Tangerang dan Kota Tangerang Selatan dihitung terpisah karena Tangerang "
+    "Selatan berdiri sebagai kota otonom sendiri sejak 2008. DKI Jakarta memang "
+    "terbagi atas lima wilayah — Pusat, Utara, Barat, Selatan, dan Timur — tetapi "
+    "kelimanya berstatus kota administrasi, bukan daerah otonom, sehingga "
+    "ditampilkan sebagai satu kesatuan. Rincian tiap titik pantau Jakarta ada "
+    "di bagian <em>Detail Kota</em>.</div></div>",
+    unsafe_allow_html=True)
+
+
+# ============================================================
 # PILIH TANGGAL PRAKIRAAN
 # ============================================================
 kol_tgl, kol_ket = st.columns([1, 2.4], gap="large")
@@ -457,10 +502,9 @@ aktual_kemarin = (df[df['tanggal'] == TGL_DATA_AKHIR]
 # RINGKASAN 6 KOTA (jawaban utama - paling atas)
 # ============================================================
 st.markdown("### Prakiraan PM2.5 per Kota")
-st.caption("Enam kota administratif Jabodetabek. Kota Tangerang dan Kota "
-           "Tangerang Selatan merupakan dua daerah otonom yang terpisah, "
-           "sedangkan DKI Jakarta ditampilkan sebagai satu kesatuan dengan "
-           "rincian per titik pantaunya pada bagian Detail Kota di bawah.")
+st.caption("Nilai tiap kota adalah rata-rata seluruh titik pantau di kota "
+           "tersebut. Komposisi wilayahnya dijelaskan pada bagian Wilayah "
+           "yang Dicakup di atas.")
 
 k_bersih = min(ringkas_kota, key=ringkas_kota.get)
 k_tinggi = max(ringkas_kota, key=ringkas_kota.get)
