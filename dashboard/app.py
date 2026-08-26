@@ -11,7 +11,7 @@ panel 6 polutan (PM2.5, PM10, SO2, CO, O3, NO2),
 rekomendasi aktivitas, edukasi bahasa awam.
 
 Algoritma : Random Forest Regressor (di balik layar)
-Cakupan   : 6 kota / 15 titik pantau, 2020 - Jun 2026
+Cakupan   : 6 kota / 15 titik pantau, 2020 - Agu 2026
 
 Penulisan Ilmiah 2026 - Bima Gunawan (50423276)
 Universitas Gunadarma - Prodi Informatika
@@ -810,10 +810,13 @@ with kol_e2:
 # CATATAN & IDENTITAS
 # ============================================================
 st.markdown("&nbsp;")
+# Rentang tanggalnya dibaca dari datanya sendiri, bukan ditulis tetap,
+# supaya keterangan ini tidak pernah tertinggal bila datanya diperpanjang.
 st.markdown(f"""
 <div class='catatan'>
     <strong>Catatan:</strong> Prakiraan disusun dari data simulasi periode
-    2020 – Juni 2026, bukan pengukuran resmi. Kategori dan rekomendasi
+    {df['tanggal'].min().year} – {BULAN_ID[TGL_DATA_AKHIR.month]}
+    {TGL_DATA_AKHIR.year}, bukan pengukuran resmi. Kategori dan rekomendasi
     mengikuti standar ISPU (Permen LHK No. 14 Tahun 2020).
 </div>
 """, unsafe_allow_html=True)
