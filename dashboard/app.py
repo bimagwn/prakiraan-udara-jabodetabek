@@ -1,11 +1,11 @@
 """
 ============================================================
-Prakiraan Kualitas Udara JABODETABEK - Tampilan Publik v4
+Prediksi Kualitas Udara JABODETABEK - Tampilan Publik v4
 Portal informasi publik - versi sendiri.
 Referensi desain: BMKG (peta + legenda + grafik peringkat),
 nafas (kartu titik pantau), IQAir (panel per-polutan).
 
-Fitur: peta interaktif 15 titik pantau, prakiraan per kota &
+Fitur: peta interaktif 15 titik pantau, prediksi per kota &
 titik pantau, riwayat 7 hari / 30 hari / 3 bulan / 1 tahun,
 panel 6 polutan (PM2.5, PM10, SO2, CO, O3, NO2),
 rekomendasi aktivitas, edukasi bahasa awam.
@@ -30,7 +30,7 @@ from pathlib import Path
 # KONFIGURASI HALAMAN
 # ============================================================
 st.set_page_config(
-    page_title="Prakiraan Kualitas Udara Jabodetabek",
+    page_title="Prediksi Kualitas Udara Jabodetabek",
     page_icon="🌤️",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -300,7 +300,7 @@ def _prediksi_mentah(tanggal_iso: str) -> pd.DataFrame:
     return hasil
 
 
-def prakiraan_semua(tanggal_iso: str) -> pd.DataFrame:
+def prediksi_semua(tanggal_iso: str) -> pd.DataFrame:
     """Hasil prediksi dilengkapi atribut tampilan.
 
     Nama titik pantau, koordinat, dan kategori dipasang di luar cache
@@ -408,8 +408,8 @@ chip = "".join(
     for kat, w in WARNA.items())
 st.markdown(f"""
 <div class='blok-judul'>
-    <h1>🌤️ Prakiraan Kualitas Udara Jabodetabek</h1>
-    <p>Prakiraan PM2.5 harian, peta titik pantau, dan rekomendasi aktivitas luar ruang —
+    <h1>🌤️ Prediksi Kualitas Udara Jabodetabek</h1>
+    <p>Prediksi PM2.5 harian, peta titik pantau, dan rekomendasi aktivitas luar ruang —
     Jakarta, Bogor, Depok, Tangerang, Tangerang Selatan, dan Bekasi.</p>
     <div>{chip}</div>
 </div>
@@ -469,26 +469,26 @@ with kol_tgl:
     # horizon dipatok 14 hari SETELAH data terakhir (bukan
     # setelah tanggal hari ini): model one-step-ahead bersandar
     # pada riwayat terakhir, sehingga makin jauh dari data
-    # terakhir prakiraan makin tidak dapat dipertanggungjawabkan
+    # terakhir prediksi makin tidak dapat dipertanggungjawabkan
     default_tgl = TGL_PRED_MIN
     tgl_maks = TGL_PRED_MIN + timedelta(days=13)
     tanggal = st.date_input(
-        "📅 Tanggal prakiraan",
+        "📅 Tanggal prediksi",
         value=default_tgl,
         min_value=TGL_PRED_MIN,
         max_value=tgl_maks)
 with kol_ket:
     st.markdown(f"""
     <div class='kartu' style='margin-top:1.7rem; padding:0.7rem 1.1rem;'>
-        Menampilkan prakiraan untuk <strong>{fmt_tanggal(tanggal)}</strong>
+        Menampilkan prediksi untuk <strong>{fmt_tanggal(tanggal)}</strong>
         &nbsp;·&nbsp; disusun dari riwayat pemantauan hingga
-        <strong>{fmt_tanggal(TGL_DATA_AKHIR)}</strong>. Prakiraan paling
+        <strong>{fmt_tanggal(TGL_DATA_AKHIR)}</strong>. Prediksi paling
         andal untuk hari pertama setelah pemantauan terakhir; makin jauh
         tanggalnya, makin besar ketidakpastiannya.
     </div>
     """, unsafe_allow_html=True)
 
-hasil = prakiraan_semua(tanggal.isoformat())
+hasil = prediksi_semua(tanggal.isoformat())
 stasiun_lewat = sorted(set(df['stasiun'].unique()) - set(hasil['stasiun']))
 if stasiun_lewat:
     st.warning("Titik pantau berikut tidak ditampilkan (riwayat belum "
@@ -501,7 +501,7 @@ aktual_kemarin = (df[df['tanggal'] == TGL_DATA_AKHIR]
 # ============================================================
 # RINGKASAN 6 KOTA (jawaban utama - paling atas)
 # ============================================================
-st.markdown("### Prakiraan PM2.5 per Kota")
+st.markdown("### Prediksi PM2.5 per Kota")
 st.caption("Nilai tiap kota adalah rata-rata seluruh titik pantau di kota "
            "tersebut. Komposisi wilayahnya dijelaskan pada bagian Wilayah "
            "yang Dicakup di atas.")
@@ -510,7 +510,7 @@ k_bersih = min(ringkas_kota, key=ringkas_kota.get)
 k_tinggi = max(ringkas_kota, key=ringkas_kota.get)
 st.markdown(f"""
 <div class='kartu' style='padding:0.65rem 1.1rem; margin-bottom:0.8rem; font-size:0.92rem;'>
-    💨 Udara paling bersih diprakirakan di
+    💨 Udara paling bersih diprediksi di
     <strong>{NAMA_TAMPIL.get(k_bersih, k_bersih)}</strong> ({ringkas_kota[k_bersih]:.0f} µg/m³)
     &nbsp;·&nbsp; paling perlu diwaspadai di
     <strong>{NAMA_TAMPIL.get(k_tinggi, k_tinggi)}</strong> ({ringkas_kota[k_tinggi]:.0f} µg/m³).
@@ -550,7 +550,7 @@ st.markdown("")
 # ============================================================
 # PETA WILAYAH (kamera DIKUNCI ke Jabodetabek)
 # ============================================================
-st.markdown("### 🗺️ Peta Prakiraan PM2.5 — 15 Titik Pantau Jabodetabek")
+st.markdown("### 🗺️ Peta Prediksi PM2.5 — 15 Titik Pantau Jabodetabek")
 
 fig_map = px.scatter_map(
     hasil, lat='lat', lon='lon',
@@ -573,7 +573,7 @@ fig_map.update_layout(
                 bgcolor='rgba(0,0,0,0)', title=None,
                 font=dict(size=12, color='#33475C')))
 st.plotly_chart(fig_map, width='stretch', theme=None, config=KONFIG_PETA)
-st.caption("Ukuran & warna lingkaran mengikuti prakiraan PM2.5 tiap titik pantau. "
+st.caption("Ukuran & warna lingkaran mengikuti prediksi PM2.5 tiap titik pantau. "
            "Arahkan kursor untuk detail; gulir untuk memperbesar dan ketuk dua kali "
            "untuk mengembalikan tampilan semula. (Latar peta membutuhkan koneksi internet; "
            "tanpa internet, titik pantau tetap tampil.)")
@@ -584,8 +584,8 @@ st.markdown("")
 # ============================================================
 # GRAFIK PERINGKAT 15 WILAYAH
 # ============================================================
-st.markdown(f"### Prakiraan PM2.5 per Titik Pantau — {fmt_tanggal(tanggal)}")
-st.caption("Seluruh 15 titik pantau di enam kota, diurutkan dari prakiraan "
+st.markdown(f"### Prediksi PM2.5 per Titik Pantau — {fmt_tanggal(tanggal)}")
+st.caption("Seluruh 15 titik pantau di enam kota, diurutkan dari prediksi "
            "tertinggi ke terendah.")
 
 urut = hasil.sort_values('pm25', ascending=False)
@@ -611,7 +611,7 @@ fig_rank.update_layout(
     bargap=0.35)
 st.plotly_chart(fig_rank, width='stretch',
                 config=KONFIG_GRAFIK)
-st.caption("Warna batang mengikuti kategori ISPU. Titik pantau paling kiri = prakiraan PM2.5 tertinggi.")
+st.caption("Warna batang mengikuti kategori ISPU. Titik pantau paling kiri = prediksi PM2.5 tertinggi.")
 
 st.markdown("")
 
@@ -649,7 +649,7 @@ with kol_kiri:
 
     st.markdown("&nbsp;")
     st.markdown(f"**Rincian per titik pantau "
-                f"{NAMA_TAMPIL.get(kota_pilih, kota_pilih)} — prakiraan PM2.5:**")
+                f"{NAMA_TAMPIL.get(kota_pilih, kota_pilih)} — prediksi PM2.5:**")
     for _, r in sub_hasil.iterrows():
         ww = WARNA[r['kategori']]
         st.markdown(f"""
@@ -782,11 +782,11 @@ with kol_e1:
             "- **NO₂ (nitrogen dioksida)** — dari kendaraan & industri.\n\n"
             "Standar ISPU memantau keenam polutan ini; kategori harian resmi "
             "ditentukan oleh polutan dengan indeks **tertinggi** (polutan kritis).")
-    with st.expander("📊 Dari mana angka prakiraan ini?", expanded=False):
+    with st.expander("📊 Dari mana angka prediksi ini?", expanded=False):
         st.markdown(
-            "Angka prakiraan dihitung oleh sistem komputer yang **mempelajari pola "
+            "Angka prediksi dihitung oleh sistem komputer yang **mempelajari pola "
             "kualitas udara dari riwayat data harian 2020–2026** — misalnya kondisi "
-            "kemarin, pola musiman, dan karakter tiap titik pantau. Prakiraan bersifat "
+            "kemarin, pola musiman, dan karakter tiap titik pantau. Prediksi bersifat "
             "perkiraan satu hari ke depan, bukan pengukuran langsung.")
 
 with kol_e2:
@@ -814,7 +814,7 @@ st.markdown("&nbsp;")
 # supaya keterangan ini tidak pernah tertinggal bila datanya diperpanjang.
 st.markdown(f"""
 <div class='catatan'>
-    <strong>Catatan:</strong> Prakiraan disusun dari data simulasi periode
+    <strong>Catatan:</strong> Prediksi disusun dari data simulasi periode
     {df['tanggal'].min().year} – {BULAN_ID[TGL_DATA_AKHIR.month]}
     {TGL_DATA_AKHIR.year}, bukan pengukuran resmi. Kategori dan rekomendasi
     mengikuti standar ISPU (Permen LHK No. 14 Tahun 2020).
