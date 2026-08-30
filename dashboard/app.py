@@ -240,7 +240,7 @@ def fmt_tanggal(d):
 
 
 # ============================================================
-# MESIN PRAKIRAAN (model memprediksi tiap titik pantau)
+# MESIN PREDIKSI (model memprediksi tiap titik pantau)
 # ============================================================
 @st.cache_data(show_spinner=False)
 def _prediksi_mentah(tanggal_iso: str) -> pd.DataFrame:
@@ -462,7 +462,7 @@ st.markdown(
 
 
 # ============================================================
-# PILIH TANGGAL PRAKIRAAN
+# PILIH TANGGAL PREDIKSI
 # ============================================================
 kol_tgl, kol_ket = st.columns([1, 2.4], gap="large")
 with kol_tgl:
