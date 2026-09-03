@@ -45,10 +45,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 @st.cache_resource
 def load_resources():
     model = joblib.load(BASE_DIR / 'model' / 'random_forest_air_quality.pkl')
-    le_stasiun = joblib.load(BASE_DIR / 'model' / 'encoder_stasiun.pkl')
-    le_kota = joblib.load(BASE_DIR / 'model' / 'encoder_kota.pkl')
-    fitur = joblib.load(BASE_DIR / 'model' / 'feature_names.pkl')
-    df = pd.read_parquet(BASE_DIR / 'dataset' / 'ispu_processed.parquet')
+    le_stasiun = joblib.load(BASE_DIR / 'model'
+                             / 'encoder_stasiun.pkl')
+    le_kota = joblib.load(BASE_DIR / 'model'
+                          / 'encoder_kota.pkl')
+    fitur = joblib.load(BASE_DIR / 'model'
+                        / 'feature_names.pkl')
+    df = pd.read_parquet(BASE_DIR / 'dataset'
+                         / 'ispu_processed.parquet')
     df['tanggal'] = pd.to_datetime(df['tanggal'])
     return model, le_stasiun, le_kota, fitur, df
 
@@ -63,7 +67,7 @@ NAMA_TAMPIL = {'Tangsel': 'Tangerang Selatan'}
 
 # Titik pantau -> WILAYAH + koordinat (lokasi publik faktual)
 # Penamaan SERAGAM "Kota - Lokasi Stasiun" agar konsisten di seluruh
-# tampilan dan sama dengan Tabel 3.3 naskah.
+# tampilan dan sama dengan Tabel 3.4 naskah.
 WILAYAH = {
     'DKI1': {'wilayah': 'Jakarta - Bundaran HI',    'lat': -6.1953, 'lon': 106.8231},
     'DKI2': {'wilayah': 'Jakarta - Kelapa Gading',  'lat': -6.1571, 'lon': 106.9055},
@@ -555,7 +559,8 @@ st.markdown("### 🗺️ Peta Prediksi PM2.5 — 15 Titik Pantau Jabodetabek")
 fig_map = px.scatter_map(
     hasil, lat='lat', lon='lon',
     color='kategori',
-    color_discrete_map={k: w['bg'] for k, w in WARNA.items()},
+    color_discrete_map={k: w['bg']
+                        for k, w in WARNA.items()},
     size=np.clip(hasil['pm25'], 12, None), size_max=26,
     hover_name='wilayah',
     custom_data=['wilayah', 'pm25', 'kategori'],
