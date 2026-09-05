@@ -10,7 +10,7 @@ titik pantau, riwayat 7 hari / 30 hari / 3 bulan / 1 tahun,
 panel 6 polutan (PM2.5, PM10, SO2, CO, O3, NO2),
 rekomendasi aktivitas, edukasi bahasa awam.
 
-Algoritma : Random Forest Regressor (di balik layar)
+Algoritma : Random Forest (di balik layar)
 Cakupan   : 6 kota / 15 titik pantau, 2020 - Agu 2026
 
 Penulisan Ilmiah 2026 - Bima Gunawan (50423276)
